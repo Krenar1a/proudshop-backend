@@ -58,6 +58,41 @@ Seed (kategori + produkte + admin):
 python -m scripts.seed_basic
 ```
 
+## Deployment ne Render
+
+1. Krijo nje Web Service (Python) dhe lidh repo-n.
+2. Build Command:
+```
+pip install -r requirements.txt
+```
+3. Start Command:
+```
+uvicorn app.main:app --host 0.0.0.0 --port 10000
+```
+4. Environment Variables (vendos ne Render Dashboard):
+	- SECRET_KEY = (gjenero nje string te forte)
+	- DATABASE_URL = postgresql+psycopg://USER:PASS@HOST:5432/DB
+	- BACKEND_CORS_ORIGINS = ["https://your-vercel-domain.vercel.app"]
+	- DEBUG = false
+	- (opsional) OPENAI_API_KEY, STRIPE_*, etj.
+5. (Opsional) Shto nje Job ne Render per migrime manuale:
+```
+alembic upgrade head
+```
+6. Pas deploy mer URL p.sh. https://your-render-backend.onrender.com dhe vendose ne frontend si NEXT_PUBLIC_API_URL.
+
+### Health Check
+Root `/` kthen `{ "message": "ProudShop API OK" }`.
+
+## Deployment i Frontend (Vercel)
+Ne Vercel vendos env:
+	- NEXT_PUBLIC_API_URL = https://your-render-backend.onrender.com/api/v1
+	- STRIPE_* (nese perdoret)
+	- FACEBOOK_* (nese perdoret)
+	- OPENAI_API_KEY (nese perdoret vetem ne edge/server operations)
+
+Vercel build perdor komandat egzistuese: `npm install` + `npm run build`.
+
 ## Hapat e Migrimit nga Next.js
 1. Zëvendëso përdorimin e Prisma me thirrje HTTP (fetch) ndaj backend-it: p.sh. `/api/v1/products/`.
 2. Krijo një utility në frontend për API (baseURL = env.NEXT_PUBLIC_API_URL).
