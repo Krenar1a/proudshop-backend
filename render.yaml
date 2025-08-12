@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: proudshop-backend
+    env: python
+    plan: free
+    buildCommand: pip install --upgrade pip && pip install -r requirements.txt
+    startCommand: bash -lc "alembic upgrade head || echo 'Alembic migration failed (check DB connectivity)'; uvicorn app.main:app --host 0.0.0.0 --port $PORT"
+    autoDeploy: true
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "false"
+      - key: BACKEND_CORS_ORIGINS
+        value: '["https://your-vercel-domain.vercel.app","http://localhost:3000"]'
+      - key: ACCESS_TOKEN_EXPIRE_MINUTES
+        value: "1440"
+      - key: ALGORITHM
+        value: HS256
+      # DATABASE_URL should be set manually in the Render dashboard or here if you prefer (remove comment)
+      # - key: DATABASE_URL
+      #   value: postgresql+psycopg://USER:PASS@HOST:5432/DBNAME
+    healthCheckPath: /
+    # Optional: specify region
+    # region: frankfurt
