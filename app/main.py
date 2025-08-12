@@ -8,6 +8,7 @@ from app.routers import admins, stats
 from app.routers import emails, chat, product_ai, facebook_marketing
 from fastapi import Depends
 from sqlalchemy.orm import Session
+from sqlalchemy import text
 from app.db.database import get_db
 from app.dependencies import get_current_admin
 from app.models.admin import AdminSetting
@@ -84,3 +85,13 @@ def set_openai_key(payload: OpenAIKeyIn, db: Session = Depends(get_db), admin=De
 @app.get("/")
 async def root():
     return {"message": "ProudShop API OK"}
+
+@app.get("/health/db")
+def health_db(db: Session = Depends(get_db)):
+    """Simple DB connectivity check returning {'db':'ok'} if SELECT 1 succeeds."""
+    try:
+        db.execute(text("SELECT 1"))
+        return {"db": "ok"}
+    except Exception:
+        # Avoid leaking internals; log can be added later
+        raise HTTPException(status_code=500, detail="db_error")
