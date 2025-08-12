@@ -1,0 +1,372 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  password  String
+  role      UserRole @default(CUSTOMER)
+  country   String?
+  phone     String?
+  address   String?
+  city      String?
+  zipCode   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  orders    Order[]
+  reviews   Review[]
+  cart      CartItem[]
+  
+  @@map("users")
+}
+
+model Admin {
+  id          String      @id @default(cuid())
+  email       String      @unique
+  name        String
+  password    String
+  role        AdminRole   @default(ADMIN)
+  permissions String      // JSON string for permissions array
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  createdBy   String?
+  
+  @@map("admins")
+}
+
+model AdminSetting {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  value       String   // Encrypted value
+  category    String   // e.g., 'facebook', 'stripe', 'email', 'openai'
+  description String?
+  isEncrypted Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("admin_settings")
+}
+
+model Category {
+  id          String    @id @default(cuid())
+  name        String
+  nameEn      String?
+  nameSq      String?
+  description String?
+  image       String?
+  slug        String    @unique
+  parentId    String?
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  products    Product[]
+  
+  @@map("categories")
+}
+
+model Product {
+  id          String   @id @default(cuid())
+  name        String
+  nameEn      String?
+  nameSq      String?
+  description String
+  shortDesc   String?
+  sku         String   @unique
+  price       Float
+  priceEUR    Float?
+  priceLEK    Float?
+  discountPrice Float?
+  discountPercentage Int?
+  images      String   // JSON string for images array
+  thumbnail   String?
+  categoryId  String
+  brand       String?
+  weight      Float?
+  dimensions  String?
+  inStock     Boolean  @default(true)
+  stockQuantity Int    @default(0)
+  lowStockThreshold Int @default(5)
+  isActive    Boolean  @default(true)
+  isFeatured  Boolean  @default(false)
+  metaTitle   String?
+  metaDescription String?
+  tags        String   // JSON string for tags array
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  category    Category @relation(fields: [categoryId], references: [id])
+  orderItems  OrderItem[]
+  reviews     Review[]
+  cartItems   CartItem[]
+  
+  @@map("products")
+}
+
+model Order {
+  id              String      @id @default(cuid())
+  orderNumber     String      @unique
+  userId          String?
+  isGuestOrder    Boolean     @default(false)
+  status          OrderStatus @default(PENDING)
+  paymentStatus   PaymentStatus @default(PENDING)
+  paymentMethod   String?
+  stripePaymentId String?
+  subtotal        Float
+  shipping        Float       @default(0)
+  tax             Float       @default(0)
+  total           Float
+  currency        String      @default("EUR")
+  
+  // Shipping Information
+  shippingName    String
+  shippingEmail   String
+  shippingPhone   String
+  shippingAddress String
+  shippingCity    String
+  shippingZip     String
+  shippingCountry String
+  
+  // Billing Information
+  billingName     String?
+  billingEmail    String?
+  billingPhone    String?
+  billingAddress  String?
+  billingCity     String?
+  billingZip      String?
+  billingCountry  String?
+  
+  notes           String?
+  trackingNumber  String?
+  estimatedDelivery DateTime?
+  deliveredAt     DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  user            User? @relation(fields: [userId], references: [id])
+  orderItems      OrderItem[]
+  statusHistory   OrderStatusHistory[]
+  
+  @@map("orders")
+}
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  orderId   String
+  productId String
+  quantity  Int
+  price     Float
+  total     Float
+  
+  order     Order   @relation(fields: [orderId], references: [id])
+  product   Product @relation(fields: [productId], references: [id])
+  
+  @@map("order_items")
+}
+
+model OrderStatusHistory {
+  id        String      @id @default(cuid())
+  orderId   String
+  status    OrderStatus
+  notes     String?
+  changedBy String?
+  createdAt DateTime    @default(now())
+  
+  order     Order @relation(fields: [orderId], references: [id])
+  
+  @@map("order_status_history")
+}
+
+model CartItem {
+  id        String  @id @default(cuid())
+  userId    String
+  productId String
+  quantity  Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  user      User    @relation(fields: [userId], references: [id])
+  product   Product @relation(fields: [productId], references: [id])
+  
+  @@unique([userId, productId])
+  @@map("cart_items")
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  userId    String
+  productId String
+  rating    Int
+  comment   String?
+  isVerified Boolean @default(false)
+  isApproved Boolean @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  user      User    @relation(fields: [userId], references: [id])
+  product   Product @relation(fields: [productId], references: [id])
+  
+  @@map("reviews")
+}
+
+model EmailTemplate {
+  id        String            @id @default(cuid())
+  name      String            @unique
+  type      EmailTemplateType
+  subject   String
+  html      String
+  isActive  Boolean           @default(true)
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+  
+  @@map("email_templates")
+}
+
+model EmailCampaign {
+  id             String              @id @default(cuid())
+  name           String
+  subject        String
+  html           String
+  content        String?
+  recipientCount Int                 @default(0)
+  successCount   Int                 @default(0)
+  failureCount   Int                 @default(0)
+  status         EmailCampaignStatus @default(DRAFT)
+  scheduledAt    DateTime?
+  sentAt         DateTime?
+  completedAt    DateTime?
+  recipients     String              // JSON string for recipients array
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+  
+  @@map("email_campaigns")
+}
+
+model Settings {
+  id    String @id @default(cuid())
+  key   String @unique
+  value String
+  type  String @default("string")
+  
+  @@map("settings")
+}
+
+model ChatSession {
+  id        String        @id @default(cuid())
+  userId    String?
+  userEmail String?
+  userName  String?
+  status    ChatStatus    @default(ACTIVE)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  
+  messages  ChatMessage[]
+  
+  @@map("chat_sessions")
+}
+
+model ChatMessage {
+  id        String      @id @default(cuid())
+  sessionId String
+  sender    MessageSender
+  message   String
+  isRead    Boolean     @default(false)
+  createdAt DateTime    @default(now())
+  
+  session   ChatSession @relation(fields: [sessionId], references: [id])
+  
+  @@map("chat_messages")
+}
+
+model Analytics {
+  id        String   @id @default(cuid())
+  event     String
+  data      String   // JSON string
+  userId    String?
+  sessionId String?
+  createdAt DateTime @default(now())
+  
+  @@map("analytics")
+}
+
+enum UserRole {
+  CUSTOMER
+  VIP_CUSTOMER
+}
+
+enum AdminRole {
+  SUPER_ADMIN
+  ADMIN
+  MANAGER
+  STAFF
+}
+
+enum Permission {
+  MANAGE_USERS
+  MANAGE_PRODUCTS
+  MANAGE_ORDERS
+  MANAGE_ANALYTICS
+  MANAGE_SETTINGS
+  MANAGE_ADMINS
+  MANAGE_MARKETING
+  MANAGE_CHAT
+  VIEW_ANALYTICS
+  VIEW_ORDERS
+  VIEW_PRODUCTS
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+  REFUNDED
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+enum EmailTemplateType {
+  ORDER_CONFIRMATION
+  ORDER_SHIPPED
+  ORDER_DELIVERED
+  PASSWORD_RESET
+  WELCOME
+  MARKETING
+}
+
+enum EmailCampaignStatus {
+  DRAFT
+  SCHEDULED
+  SENT
+  CANCELLED
+}
+
+enum ChatStatus {
+  ACTIVE
+  CLOSED
+  WAITING
+}
+
+enum MessageSender {
+  USER
+  ADMIN
+  SYSTEM
+}

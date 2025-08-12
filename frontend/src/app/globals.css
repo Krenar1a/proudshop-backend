@@ -1,0 +1,95 @@
+@import "tailwindcss";
+
+/* Heq variablat që shkaktonin probleme me ngjyrat */
+html {
+  color-scheme: light;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #ffffff !important;
+  color: #1f2937 !important;
+}
+
+/* Sigurohem që elementi body ka ngjyrat e duhura */
+body {
+  background-color: #ffffff !important;
+  color: #1f2937 !important;
+}
+
+/* Rregulloj input styles */
+input, textarea, select {
+  background-color: #ffffff !important;
+  color: #1f2937 !important;
+  border: 1px solid #d1d5db;
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: #8b5cf6;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+}
+
+/* Buttons */
+button {
+  font-family: inherit;
+}
+
+/* Links */
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Rregulloj ngjyrat e tekstit në div-et kryesore */
+div, p, span, h1, h2, h3, h4, h5, h6 {
+  color: inherit;
+}
+
+/* Override për dark mode nëse përdoruesi e ka */
+@media (prefers-color-scheme: dark) {
+  html {
+    color-scheme: light !important;
+  }
+  
+  html, body {
+    background-color: #ffffff !important;
+    color: #1f2937 !important;
+  }
+}
+
+/* Specifik për admin pages */
+.admin-page {
+  background-color: #ffffff !important;
+  color: #1f2937 !important;
+}
+
+.admin-page * {
+  color: #1f2937 !important;
+  background-color: inherit;
+}
+
+.admin-page .bg-gray-50 {
+  background-color: #f9fafb !important;
+}
+
+.admin-page .bg-white {
+  background-color: #ffffff !important;
+}
+
+.admin-page .text-gray-900 {
+  color: #1f2937 !important;
+}
+
+.admin-page .text-gray-600 {
+  color: #4b5563 !important;
+}
+
+.admin-page .text-gray-500 {
+  color: #6b7280 !important;
+}
