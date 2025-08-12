@@ -1,0 +1,10 @@
+{
+  "name": "proudshop-backend-node-wrapper",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Fallback wrapper so an incorrectly created Node Render service can build & start the FastAPI backend.",
+  "scripts": {
+    "build": "python -m pip install --upgrade pip && python -m pip install -r requirements.txt",
+    "start": "node node-start.js"
+  }
+}
