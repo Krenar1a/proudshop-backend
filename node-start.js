@@ -1,6 +1,11 @@
 #!/usr/bin/env node
 const { spawn } = require('child_process');
 
+// Ensure PYTHONPATH includes project src root so 'app' package can be imported
+const path = require('path');
+const projectRoot = process.cwd();
+process.env.PYTHONPATH = [projectRoot, process.env.PYTHONPATH || ''].filter(Boolean).join(path.delimiter);
+
 // Run alembic migrations first, then start uvicorn
 const run = (cmd, args, opts={}) => new Promise((res, rej) => {
   const p = spawn(cmd, args, { stdio: 'inherit', shell: true, ...opts });
