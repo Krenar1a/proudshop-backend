@@ -1,0 +1,25 @@
+name: Auto Deploy to VPS
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Deploy to VPS
+      uses: appleboy/ssh-action@v0.1.5
+      with:
+        host: ${{ secrets.VPS_HOST }}
+        username: ${{ secrets.VPS_USER }}
+        key: ${{ secrets.VPS_SSH_KEY }}
+        script: |
+          cd /var/www/proudshop-backend
+          git pull origin master
+          source .venv/bin/activate
+          pip install -r requirements.txt
+          alembic upgrade head
+          sudo systemctl restart proudshop-backend
+          echo "✅ Deployment completed"
