@@ -14,10 +14,9 @@ from passlib.context import CryptContext
 
 # Database connection - try multiple common configurations
 DATABASE_URLS = [
-    "postgresql://postgres:postgres@localhost:5432/proudshop",  # Default from config
+    "sqlite:///./proudshop.db",  # SQLite (current VPS setup)
+    "postgresql://postgres:postgres@localhost:5432/proudshop",  # PostgreSQL default
     "postgresql://proudshop_user:proudshop123@localhost/proudshop_db",  # Previous attempt
-    "postgresql://postgres:@localhost:5432/proudshop",  # No password
-    "postgresql://root:@localhost:5432/proudshop",  # Root user
 ]
 
 # Also try to read from environment
