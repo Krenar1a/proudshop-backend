@@ -20,7 +20,7 @@ def upgrade() -> None:
 	inspector = sa.inspect(bind)
 	cols = {c['name'] for c in inspector.get_columns('products')}
 	if 'is_draft' not in cols:
-		op.add_column('products', sa.Column('is_draft', sa.Boolean(), nullable=False, server_default=sa.text('0')))
+		op.add_column('products', sa.Column('is_draft', sa.Boolean(), nullable=False, server_default=sa.text('false')))
 		# Remove server default afterwards for cleanliness (only for new rows)
 		try:
 			with op.batch_alter_table('products') as batch_op:

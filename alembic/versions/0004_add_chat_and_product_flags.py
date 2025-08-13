@@ -23,9 +23,9 @@ def upgrade():
     existing_product_cols = {c['name'] for c in inspector.get_columns('products')}
     # Product merchandising fields (safe direct adds for SQLite); guard for re-runs
     if 'is_featured' not in existing_product_cols:
-        op.add_column('products', sa.Column('is_featured', sa.Boolean(), nullable=False, server_default=sa.text('0')))
+        op.add_column('products', sa.Column('is_featured', sa.Boolean(), nullable=False, server_default=sa.text('false')))
     if 'is_offer' not in existing_product_cols:
-        op.add_column('products', sa.Column('is_offer', sa.Boolean(), nullable=False, server_default=sa.text('0')))
+        op.add_column('products', sa.Column('is_offer', sa.Boolean(), nullable=False, server_default=sa.text('false')))
     if 'discount_price_eur' not in existing_product_cols:
         op.add_column('products', sa.Column('discount_price_eur', sa.Numeric(10, 2), nullable=True))
     if 'discount_price_lek' not in existing_product_cols:
