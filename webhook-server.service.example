@@ -1,0 +1,15 @@
+[Unit]
+Description=ProudShop Auto-Deploy Webhook Server
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/var/www/proudshop-backend
+Environment=PATH=/var/www/proudshop-backend/.venv/bin
+ExecStart=/var/www/proudshop-backend/.venv/bin/python /var/www/proudshop-backend/webhook-server.py
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
