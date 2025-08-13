@@ -7,7 +7,7 @@ Run: python3 seed-complete.py
 import os
 import sys
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timezone
 
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent))
@@ -50,7 +50,7 @@ def create_admin(db):
         "name": "Admin User",
         "password_hash": password_hash,
         "role": "SUPER_ADMIN",
-        "created_at": datetime.utcnow()
+        "created_at": datetime.now(timezone.utc)
     })
     
     print("✅ Admin user created: admin@proudshop.com / admin123")
@@ -154,18 +154,18 @@ def create_sample_products(db):
         result = db.execute(text("SELECT COUNT(*) FROM products WHERE slug = :slug"), {"slug": product["slug"]})
         if result.scalar() == 0:
             # Prepare values for insertion
-            created_at = datetime.utcnow()
+            created_at = datetime.now(timezone.utc)
             
             db.execute(text("""
                 INSERT INTO products (
                     title, description, price_eur, price_lek, 
                     discount_price_eur, discount_price_lek,
-                    stock, category_id, is_featured, is_offer, slug, 
+                    stock, category_id, is_featured, is_offer, is_draft, slug, 
                     created_at, updated_at
                 ) VALUES (
                     :title, :description, :price_eur, :price_lek,
                     :discount_price_eur, :discount_price_lek,
-                    :stock, :category_id, :is_featured, :is_offer, :slug,
+                    :stock, :category_id, :is_featured, :is_offer, :is_draft, :slug,
                     :created_at, :updated_at
                 )
             """), {
@@ -179,6 +179,7 @@ def create_sample_products(db):
                 "category_id": product["category_id"],
                 "is_featured": product.get("is_featured", False),
                 "is_offer": product.get("is_offer", False),
+                "is_draft": product.get("is_draft", False),
                 "slug": product["slug"],
                 "created_at": created_at,
                 "updated_at": created_at
