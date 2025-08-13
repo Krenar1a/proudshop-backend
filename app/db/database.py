@@ -15,7 +15,7 @@ if not raw_url:
     raise SystemExit(1)
 
 parsed = urlparse(raw_url)
-supported_prefixes = ("postgresql+psycopg", "postgresql")
+supported_prefixes = ("postgresql+psycopg", "postgresql", "sqlite")
 if not any(raw_url.startswith(p) for p in supported_prefixes):
     print(
         f"ERROR: Unsupported DATABASE_URL scheme '{parsed.scheme}'. Expected one of: postgresql+psycopg, postgresql.\n"
