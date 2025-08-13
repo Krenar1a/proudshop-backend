@@ -1,4 +1,5 @@
 from pydantic_settings import BaseSettings
+from typing import Optional
 from functools import lru_cache
 
 class Settings(BaseSettings):
@@ -17,6 +18,15 @@ class Settings(BaseSettings):
 
     # CORS
     BACKEND_CORS_ORIGINS: list[str] = ["http://localhost:3000"]
+
+    # Optional integrations (declare so extra vars don't error)
+    OPENAI_API_KEY: Optional[str] = None
+    STRIPE_SECRET_KEY: Optional[str] = None
+    SMTP_HOST: Optional[str] = None
+    SMTP_PORT: Optional[int] = None
+    SMTP_USER: Optional[str] = None
+    SMTP_PASS: Optional[str] = None
+    SMTP_FROM: Optional[str] = None
 
     class Config:
         env_file = ".env"
