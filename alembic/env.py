@@ -3,10 +3,18 @@ from sqlalchemy import engine_from_config, pool
 from alembic import context
 import os, sys
 
-BASE_DIR = os.path.dirname(os.path.dirname(__file__))
-PROJECT_ROOT = os.path.dirname(BASE_DIR)
-if PROJECT_ROOT not in sys.path:
-    sys.path.append(PROJECT_ROOT)
+# Calculate project root (directory containing 'app') relative to this file
+CURRENT_DIR = os.path.dirname(__file__)
+PROJECT_ROOT = os.path.abspath(os.path.join(CURRENT_DIR, os.pardir))
+
+# Add both project root and its parent just in case execution context differs
+for p in {PROJECT_ROOT, os.path.dirname(PROJECT_ROOT)}:
+    if p not in sys.path:
+        sys.path.insert(0, p)
+
+# Explicit sanity check to reduce confusing ModuleNotFoundError later
+if not os.path.isdir(os.path.join(PROJECT_ROOT, 'app')):
+    raise RuntimeError(f"Expected 'app' directory under {PROJECT_ROOT}, found: {os.listdir(PROJECT_ROOT)}")
 
 from app.core.config import get_settings
 from app.db.database import Base
