@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Integer, String, Text, Numeric, ForeignKey, Boolean
+from sqlalchemy import Column, Integer, String, Text, Numeric, ForeignKey, Boolean, DateTime
+from datetime import datetime
 from sqlalchemy.orm import relationship
 from app.db.database import Base
 
@@ -20,5 +21,12 @@ class Product(Base):
     discount_price_eur = Column(Numeric(10,2), nullable=True)
     discount_price_lek = Column(Numeric(10,2), nullable=True)
     source_url = Column(Text, nullable=True)
+    # Draft / publishing state
+    is_draft = Column(Boolean, nullable=False, default=False)
+    # Slug for SEO (nullable for backward compatibility with existing rows; populated via migration)
+    slug = Column(String(220), nullable=True, index=True)
+    # Timestamps
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    updated_at = Column(DateTime, default=datetime.utcnow, nullable=False)
 
     category = relationship("Category")
