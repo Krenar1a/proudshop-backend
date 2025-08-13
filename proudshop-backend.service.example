@@ -1,0 +1,17 @@
+[Unit]
+Description=ProudShop FastAPI Service
+After=network.target
+
+[Service]
+User=www-data
+Group=www-data
+WorkingDirectory=/var/www/proudshop-backend
+EnvironmentFile=/var/www/proudshop-backend/.env
+ExecStart=/var/www/proudshop-backend/.venv/bin/bash run.sh
+Restart=always
+RestartSec=5
+KillMode=process
+TimeoutStopSec=20
+
+[Install]
+WantedBy=multi-user.target
