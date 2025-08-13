@@ -8,8 +8,8 @@ Create Date: 2025-08-09
 from alembic import op
 import sqlalchemy as sa
 
-revision = '0007_add_product_timestamps'
-down_revision = '0006_add_product_is_draft'
+revision = '0007_timestamps'
+down_revision = '0006_is_draft'
 branch_labels = None
 depends_on = None
 

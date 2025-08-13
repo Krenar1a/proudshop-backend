@@ -2,8 +2,8 @@ from alembic import op
 import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
-revision = '0004_add_chat_and_product_flags'
-down_revision = '0003_add_shipping_fields_to_orders'
+revision = '0004_chat_flags'
+down_revision = '0003_shipping'
 branch_labels = None
 depends_on = None
 
