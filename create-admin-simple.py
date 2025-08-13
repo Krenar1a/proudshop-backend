@@ -56,15 +56,17 @@ def create_admin():
             # Create password hash
             password_hash = hash_password("admin123")
             
-            # Insert admin user
+            # Insert admin user (no updated_at column, use datetime for SQLite)
+            from datetime import datetime
             db.execute(text("""
-                INSERT INTO admins (email, name, password_hash, role, created_at, updated_at) 
-                VALUES (:email, :name, :password_hash, :role, NOW(), NOW())
+                INSERT INTO admins (email, name, password_hash, role, created_at) 
+                VALUES (:email, :name, :password_hash, :role, :created_at)
             """), {
                 "email": "admin@proudshop.com",
                 "name": "Admin User",
                 "password_hash": password_hash,
-                "role": "SUPER_ADMIN"
+                "role": "SUPER_ADMIN",
+                "created_at": datetime.utcnow()
             })
             
             db.commit()
