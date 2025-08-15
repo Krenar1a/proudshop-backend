@@ -45,6 +45,20 @@ class AdminCreateInput(BaseModel):
 def register(data: AdminCreateInput, db: Session = Depends(get_db)):
     exists = db.query(Admin).filter(Admin.email == data.email).first()
     if exists:
+        # If already exists and password matches, treat as idempotent register -> issue tokens
+        if verify_password(data.password, exists.password_hash):
+            settings = get_settings()
+            access = create_access_token(str(exists.id))
+            raw_refresh = generate_refresh_token()
+            refresh = RefreshToken(
+                admin_id=exists.id,
+                token_hash=hash_token(raw_refresh),
+                expires_at=datetime.utcnow() + timedelta(days=settings.REFRESH_TOKEN_EXPIRE_DAYS)
+            )
+            db.add(refresh)
+            db.commit()
+            return TokenOutput(access_token=access, refresh_token=raw_refresh)
+        # If password doesn't match, keep previous behavior
         raise HTTPException(status_code=400, detail="Email in use")
     admin = Admin(email=data.email, name=data.name, password_hash=get_password_hash(data.password))
     db.add(admin)

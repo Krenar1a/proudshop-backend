@@ -5,7 +5,8 @@ class ProductBase(BaseModel):
     title: str
     description: Optional[str] = None
     price_eur: float
-    price_lek: float
+    # Some legacy rows may have NULL in price_lek; make it optional with a default for output
+    price_lek: Optional[float] = None
     stock: int
     category_id: Optional[int] = None
     images: Optional[str] = None  # JSON string of image objects or URLs

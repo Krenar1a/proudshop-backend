@@ -18,8 +18,11 @@ def list_products(
     sort: str | None = None,
     featured: bool | None = None,
     offers: bool | None = None,
-    db: Session = Depends(get_db)) -> Dict[str, Any]:
+    paginated: bool = Query(False),
+    db: Session = Depends(get_db)) -> Any:
     items, total = product_service.list_products(db, page=page, limit=limit, search=search, category=category, sort=sort, featured=featured, offers=offers)
+    if not paginated:
+        return [ProductOut.model_validate(i) for i in items]
     pages = (total + limit - 1) // limit
     return {
         "products": [ProductOut.model_validate(i) for i in items],
